@@ -6,7 +6,7 @@ RUN apk --no-cache add curl jq \
     && wget -qO- https://github.com/killemov/Shift/archive/master.tar.gz | tar xz -C /opt/transmission-ui \
     && mv /opt/transmission-ui/Shift-master /opt/transmission-ui/shift \
     && echo "Install Flood for Transmission" \
-    && wget -qO- https://github.com/johman10/flood-for-transmission/releases/download/latest/flood-for-transmission.tar.gz | tar xz -C /opt/transmission-ui \
+    && wget -qO- https://github.com/johman10/flood-for-transmission/releases/download/v1.0.1/flood-for-transmission.tar.gz | tar xz -C /opt/transmission-ui \
     && echo "Install Combustion" \
     && wget -qO- https://github.com/Secretmapper/combustion/archive/release.tar.gz | tar xz -C /opt/transmission-ui \
     && echo "Install kettu" \
@@ -23,11 +23,14 @@ VOLUME /data
 VOLUME /config
 
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y software-properties-common && \
+    add-apt-repository ppa:ubuntuhandbook1/transmission && \
+    apt-get update && apt-get install -y \
     dumb-init transmission-daemon openvpn privoxy \
     tzdata dnsutils iputils-ping ufw iproute2 \
     openssh-client git jq curl wget unrar unzip bc \
     && rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/* \
+    && apt-get remove -y software-properties-common \
     && useradd -u 911 -U -d /config -s /bin/false abc \
     && usermod -G users abc
 
