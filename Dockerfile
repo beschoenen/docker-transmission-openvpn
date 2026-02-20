@@ -1,4 +1,4 @@
-FROM alpine:latest as TransmissionUIs
+FROM alpine:latest AS transmission-uis
 
 RUN apk --no-cache add curl jq \
     && mkdir -p /opt/transmission-ui \
@@ -21,8 +21,6 @@ FROM ubuntu:24.04
 
 VOLUME /data
 VOLUME /config
-
-COPY --from=TransmissionUIs /opt/transmission-ui /opt/transmission-ui
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
@@ -80,6 +78,8 @@ HEALTHCHECK --interval=1m CMD /etc/scripts/healthcheck.sh
 # Pass revision as a build arg, set it as env var
 ARG REVISION
 ENV REVISION=${REVISION:-""}
+
+COPY --from=transmission-uis /opt/transmission-ui /opt/transmission-ui
 
 # Compatability with https://hub.docker.com/r/willfarrell/autoheal/
 LABEL autoheal=true
